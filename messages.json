@@ -1,21 +1,3 @@
 {
-  "messages": [
-    {
-      "id": "msg-20261101-180902",
-      "title": {
-        "de": "Black Friday Deal"
-      },
-      "text": {
-        "de": "Jetzt 1000 Credits mit 40% Rabatt"
-      },
-      "button": {
-        "de": "Kaufen"
-      },
-      "url": "https:\/\/www.adidas.de",
-      "image": "https:\/\/raw.githubusercontent.com\/Evisac\/worldradio\/main\/bilder\/20261101-180959.jpg",
-      "languages": [
-        "de"
-      ]
-    }
-  ]
+  "messages": []
 }
