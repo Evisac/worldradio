@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>World Radio</title>
 <meta property="og:title" content="World Radio">
-<meta property="og:image" content="icon.png">
+<meta property="og:description" content="Radio hören mit World Radio 🎧">
+<meta property="og:image" content="https://evisac.github.io/worldradio/icon.png">
+<meta property="og:type" content="website">
 <style>
   :root { --bg:#061820; --card:#0f2a35; --mint:#2EE6A8; --teal:#00B3C7; --txt:#eef4f6; --sub:#9fb3bb; }
   * { box-sizing:border-box; }
@@ -52,8 +54,9 @@
 <script>
 (function () {
   var q = new URLSearchParams(location.search);
-  var name = q.get("n") || "Radio", stream = q.get("u") || "", logo = q.get("f") || "",
-      web = q.get("w") || "", country = q.get("c") || "", tags = q.get("t") || "";
+  var id = q.get("id") || "";
+  var st = { name: q.get("n") || "", stream: q.get("u") || "", logo: q.get("f") || "",
+             country: q.get("c") || "", tags: q.get("t") || "" };
   var de = (navigator.language || "de").toLowerCase().indexOf("de") === 0;
   var T = de ? { open:"In World Radio öffnen", play:"Jetzt anhören", stop:"Stopp", dl:"Zum Google Play Store",
                  hint:"Mit der App World Radio für Android hörst du diesen Sender auch im Hintergrund und im Auto und kannst ihn speichern.",
@@ -62,22 +65,47 @@
                  hint:"With the World Radio app for Android you can listen in the background, in your car and save stations.",
                  ios:"World Radio is currently available for Android." };
   document.documentElement.lang = de ? "de" : "en";
-  document.title = name + " – World Radio";
-  document.getElementById("name").textContent = name;
-  document.getElementById("meta").textContent = [country, tags.split(",").slice(0, 3).join(", ")].filter(Boolean).join(" · ");
   document.getElementById("tOpen").textContent = T.open;
   document.getElementById("tPlay").textContent = T.play;
   document.getElementById("tDl").textContent = T.dl;
-  // iPhone/iPad: App gibt es (noch) nicht -> Download-Knopf ausblenden
+  // iPhone/iPad: App gibt es (noch) nicht -> Play-Store-Knopf ausblenden
   var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
   if (ios) document.getElementById("dl").style.display = "none";
   document.getElementById("hint").textContent = ios ? T.ios : T.hint;
 
-  // Ohne Senderlogo: World-Radio-Symbol füllt die ganze Kachel (kein weisser Rand)
-  var img = document.getElementById("logo"), box = document.getElementById("logoBox");
+  var img = document.getElementById("logo"), box = document.getElementById("logoBox"),
+      btn = document.getElementById("play");
   function useIcon() { box.className = "logo fill"; img.onerror = null; img.src = "icon.png"; }
-  if (logo) { img.src = logo; img.onerror = useIcon; } else { useIcon(); }
 
+  function render() {
+    var name = st.name || "Radio";
+    document.title = name + " – World Radio";
+    document.getElementById("name").textContent = name;
+    document.getElementById("meta").textContent =
+      [st.country, st.tags.split(",").slice(0, 3).join(", ")].filter(Boolean).join(" · ");
+    // Ohne Senderlogo: World-Radio-Symbol füllt die ganze Kachel (kein weisser Rand)
+    if (st.logo) { box.className = "logo"; img.onerror = useIcon; img.src = st.logo; } else { useIcon(); }
+    btn.style.display = st.stream ? "flex" : "none";
+  }
+  render();
+
+  // Kurzer Link (nur ?id=…): Senderdaten bei radio-browser.info nachladen
+  if (id && !st.stream && id.indexOf("custom:") !== 0) {
+    var servers = ["https://de1.api.radio-browser.info", "https://de2.api.radio-browser.info",
+                   "https://fi1.api.radio-browser.info", "https://all.api.radio-browser.info"];
+    (function load(i) {
+      if (i >= servers.length) return;
+      fetch(servers[i] + "/json/stations/byuuid/" + encodeURIComponent(id))
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (a) {
+          var s = a && a[0]; if (!s) return;
+          st.name = s.name || st.name; st.stream = s.url_resolved || s.url || "";
+          st.logo = s.favicon || ""; st.country = s.country || ""; st.tags = s.tags || "";
+          render();
+        })
+        .catch(function () { load(i + 1); });
+    })(0);
+  }
 
   // Android: zuerst die App versuchen; ohne App bleibt diese Seite (browser_fallback_url mit nf=1)
   var android = /android/i.test(navigator.userAgent);
@@ -90,10 +118,10 @@
   }
 
   // Im Browser anhören
-  var audio = document.getElementById("audio"), btn = document.getElementById("play"),
-      label = document.getElementById("tPlay"), live = document.getElementById("live");
-  if (!stream) btn.style.display = "none";
+  var audio = document.getElementById("audio"), label = document.getElementById("tPlay"),
+      live = document.getElementById("live");
   btn.onclick = function () {
+    var stream = st.stream; if (!stream) return;
     // http-Streams darf eine https-Seite nicht abspielen -> in neuem Tab öffnen
     if (location.protocol === "https:" && stream.indexOf("http://") === 0) { window.open(stream, "_blank"); return; }
     if (audio.paused) {
