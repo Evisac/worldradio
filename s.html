@@ -32,6 +32,7 @@
   .primary { background:var(--mint); color:#00382a; }
   .secondary { background:transparent; color:var(--txt); border:2px solid #2b4a56; }
   .hint { color:var(--sub); font-size:13px; margin-top:18px; line-height:1.4; }
+  .applink { display:block; margin-top:14px; color:var(--mint); font-size:14px; text-decoration:underline; }
   .live { display:none; color:#F01E1E; font-weight:700; margin-top:14px; }
   .live::before { content:"● "; }
 </style>
@@ -43,25 +44,34 @@
   <h1 id="name">Radio</h1>
   <div class="meta" id="meta"></div>
 
-  <a class="btn primary" id="openApp" style="display:none">📻 <span id="tOpen">In World Radio öffnen</span></a>
   <button class="btn primary" id="play">▶ <span id="tPlay">Jetzt anhören</span></button>
   <div class="live" id="live">Live</div>
   <!-- Später, wenn World Radio im Play Store ist: href="https://play.google.com/store/apps/details?id=com.worldradio.app" -->
-  <a class="btn secondary" id="dl" href="https://play.google.com/store/apps" target="_blank" rel="noopener"><span id="tDl">Zum Google Play Store</span></a>
+  <a class="btn secondary" id="dl" href="https://play.google.com" target="_blank" rel="noopener"><span id="tDl">Zum Google Play Store</span></a>
   <div class="hint" id="hint"></div>
+  <a class="applink" id="openApp" style="display:none"><span id="tOpen">App schon installiert? In World Radio öffnen</span></a>
   <audio id="audio" preload="none"></audio>
 </div>
 <script>
 (function () {
   var q = new URLSearchParams(location.search);
-  var id = q.get("id") || "";
+  // Kurzlink ?s=… (22 Zeichen) -> UUID
+  function shortToUuid(v) {
+    try {
+      var b = atob(v.replace(/-/g, "+").replace(/_/g, "/")), h = "";
+      for (var i = 0; i < b.length; i++) h += ("0" + b.charCodeAt(i).toString(16)).slice(-2);
+      if (h.length !== 32) return "";
+      return h.slice(0, 8) + "-" + h.slice(8, 12) + "-" + h.slice(12, 16) + "-" + h.slice(16, 20) + "-" + h.slice(20);
+    } catch (e) { return ""; }
+  }
+  var id = q.get("id") || (q.get("s") ? shortToUuid(q.get("s")) : "");
   var st = { name: q.get("n") || "", stream: q.get("u") || "", logo: q.get("f") || "",
              country: q.get("c") || "", tags: q.get("t") || "" };
   var de = (navigator.language || "de").toLowerCase().indexOf("de") === 0;
-  var T = de ? { open:"In World Radio öffnen", play:"Jetzt anhören", stop:"Stopp", dl:"Zum Google Play Store",
+  var T = de ? { open:"App schon installiert? In World Radio öffnen", play:"Jetzt anhören", stop:"Stopp", dl:"Zum Google Play Store",
                  hint:"Mit der App World Radio für Android hörst du diesen Sender auch im Hintergrund und im Auto und kannst ihn speichern.",
                  ios:"World Radio gibt es aktuell für Android." }
-             : { open:"Open in World Radio", play:"Listen now", stop:"Stop", dl:"Go to Google Play Store",
+             : { open:"Already have the app? Open in World Radio", play:"Listen now", stop:"Stop", dl:"Go to Google Play Store",
                  hint:"With the World Radio app for Android you can listen in the background, in your car and save stations.",
                  ios:"World Radio is currently available for Android." };
   document.documentElement.lang = de ? "de" : "en";
@@ -113,7 +123,7 @@
     var fallback = location.href + (location.search ? "&" : "?") + "nf=1";
     var intent = "intent://station" + location.search + "#Intent;scheme=worldradio;package=com.worldradio.app;" +
                  "S.browser_fallback_url=" + encodeURIComponent(fallback) + ";end";
-    var o = document.getElementById("openApp"); o.href = intent; o.style.display = "flex";
+    var o = document.getElementById("openApp"); o.href = intent; o.style.display = "block";
     if (!q.get("nf")) location.href = intent;
   }
 
