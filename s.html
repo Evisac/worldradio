@@ -123,7 +123,11 @@
     var fallback = location.href + (location.search ? "&" : "?") + "nf=1";
     var intent = "intent://station" + location.search + "#Intent;scheme=worldradio;package=com.worldradio.app;" +
                  "S.browser_fallback_url=" + encodeURIComponent(fallback) + ";end";
-    var o = document.getElementById("openApp"); o.href = intent; o.style.display = "block";
+    // Kleiner Link: direkt das App-Schema (worldradio://). Das klappt auch in Browsern und
+    // In-App-Browsern, die intent://-Links ignorieren (z. B. in China ohne Google-Dienste).
+    var o = document.getElementById("openApp");
+    o.href = "worldradio://station" + location.search.replace(/[?&]nf=1/, "");
+    o.style.display = "block";
     if (!q.get("nf")) location.href = intent;
   }
 
