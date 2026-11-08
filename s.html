@@ -35,9 +35,13 @@
   .applink { display:block; margin-top:14px; color:var(--mint); font-size:14px; text-decoration:underline; }
   .live { display:none; color:#F01E1E; font-weight:700; margin-top:14px; }
   .live::before { content:"● "; }
+  .wx { display:none; position:fixed; top:0; left:0; right:0; padding:14px 64px 14px 18px; background:var(--mint);
+        color:#00382a; font-size:15px; font-weight:700; line-height:1.4; z-index:9; }
+  .wx::after { content:"↗"; position:absolute; right:20px; top:6px; font-size:34px; }
 </style>
 </head>
 <body>
+<div class="wx" id="wx"></div>
 <div class="card">
   <div class="brand"><img src="icon.png" alt=""> World Radio</div>
   <div class="logo" id="logoBox"><img id="logo" alt=""></div>
@@ -67,14 +71,25 @@
   var id = q.get("id") || (q.get("s") ? shortToUuid(q.get("s")) : "");
   var st = { name: q.get("n") || "", stream: q.get("u") || "", logo: q.get("f") || "",
              country: q.get("c") || "", tags: q.get("t") || "" };
-  var de = (navigator.language || "de").toLowerCase().indexOf("de") === 0;
+  var lang = (navigator.language || "de").toLowerCase();
+  var de = lang.indexOf("de") === 0, zh = lang.indexOf("zh") === 0;
   var T = de ? { open:"App schon installiert? In World Radio öffnen", play:"Jetzt anhören", stop:"Stopp", dl:"Zum Google Play Store",
                  hint:"Mit der App World Radio für Android hörst du diesen Sender auch im Hintergrund und im Auto und kannst ihn speichern.",
-                 ios:"World Radio gibt es aktuell für Android." }
+                 ios:"World Radio gibt es aktuell für Android.",
+                 wx:"Um World Radio zu öffnen: oben rechts auf ··· tippen und „Im Browser öffnen“ wählen." }
+        : zh ? { open:"已安装应用？在 World Radio 中打开", play:"立即收听", stop:"停止", dl:"前往 Google Play 商店",
+                 hint:"使用 Android 版 World Radio 应用，可以在后台和车上收听，并收藏电台。",
+                 ios:"World Radio 目前仅支持 Android。",
+                 wx:"要打开 World Radio：请点击右上角 ··· ，选择「在浏览器打开」。" }
              : { open:"Already have the app? Open in World Radio", play:"Listen now", stop:"Stop", dl:"Go to Google Play Store",
                  hint:"With the World Radio app for Android you can listen in the background, in your car and save stations.",
-                 ios:"World Radio is currently available for Android." };
-  document.documentElement.lang = de ? "de" : "en";
+                 ios:"World Radio is currently available for Android.",
+                 wx:"To open World Radio: tap ··· at the top right and choose “Open in browser”." };
+  document.documentElement.lang = de ? "de" : zh ? "zh" : "en";
+  // WeChat blockiert das Öffnen anderer Apps -> Hinweis, die Seite im Browser zu öffnen
+  var wechat = /MicroMessenger/i.test(navigator.userAgent);
+  if (wechat) { var w = document.getElementById("wx"); w.textContent = T.wx; w.style.display = "block";
+                document.body.style.paddingTop = "90px"; }
   document.getElementById("tOpen").textContent = T.open;
   document.getElementById("tPlay").textContent = T.play;
   document.getElementById("tDl").textContent = T.dl;
@@ -128,7 +143,7 @@
     var o = document.getElementById("openApp");
     o.href = "worldradio://station" + location.search.replace(/[?&]nf=1/, "");
     o.style.display = "block";
-    if (!q.get("nf")) location.href = intent;
+    if (!q.get("nf") && !wechat) location.href = intent;
   }
 
   // Im Browser anhören
