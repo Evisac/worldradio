@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>World Radio</title>
-<meta property="og:title" content="World Radio">
-<meta property="og:description" content="Radio hören mit World Radio 🎧">
+<title>World Radio 1</title>
+<meta property="og:title" content="World Radio 1">
+<meta property="og:description" content="Radio hören mit World Radio 1 🎧">
 <meta property="og:image" content="https://evisac.github.io/worldradio/icon.png">
 <meta property="og:type" content="website">
 <style>
@@ -43,17 +43,17 @@
 <body>
 <div class="wx" id="wx"></div>
 <div class="card">
-  <div class="brand"><img src="icon.png" alt=""> World Radio</div>
+  <div class="brand"><img src="icon.png" alt=""> World Radio 1</div>
   <div class="logo" id="logoBox"><img id="logo" alt=""></div>
   <h1 id="name">Radio</h1>
   <div class="meta" id="meta"></div>
 
   <button class="btn primary" id="play">▶ <span id="tPlay">Jetzt anhören</span></button>
   <div class="live" id="live">Live</div>
-  <!-- Später, wenn World Radio im Play Store ist: href="https://play.google.com/store/apps/details?id=com.worldradio.app" -->
+  <!-- Später, wenn World Radio 1 im Play Store ist: href="https://play.google.com/store/apps/details?id=com.worldradio.app" -->
   <a class="btn secondary" id="dl" href="https://play.google.com" target="_blank" rel="noopener"><span id="tDl">Zum Google Play Store</span></a>
   <div class="hint" id="hint"></div>
-  <a class="applink" id="openApp" style="display:none"><span id="tOpen">App schon installiert? In World Radio öffnen</span></a>
+  <a class="applink" id="openApp" style="display:none"><span id="tOpen">App schon installiert? In World Radio 1 öffnen</span></a>
   <audio id="audio" preload="none"></audio>
 </div>
 <script>
@@ -73,18 +73,18 @@
              country: q.get("c") || "", tags: q.get("t") || "" };
   var lang = (navigator.language || "de").toLowerCase();
   var de = lang.indexOf("de") === 0, zh = lang.indexOf("zh") === 0;
-  var T = de ? { open:"App schon installiert? In World Radio öffnen", play:"Jetzt anhören", stop:"Stopp", dl:"Zum Google Play Store",
-                 hint:"Mit der App World Radio für Android hörst du diesen Sender auch im Hintergrund und im Auto und kannst ihn speichern.",
-                 ios:"World Radio gibt es aktuell für Android.",
-                 wx:"Um World Radio zu öffnen: oben rechts auf ··· tippen und „Im Browser öffnen“ wählen." }
-        : zh ? { open:"已安装应用？在 World Radio 中打开", play:"立即收听", stop:"停止", dl:"前往 Google Play 商店",
-                 hint:"使用 Android 版 World Radio 应用，可以在后台和车上收听，并收藏电台。",
-                 ios:"World Radio 目前仅支持 Android。",
-                 wx:"要打开 World Radio：请点击右上角 ··· ，选择「在浏览器打开」。" }
-             : { open:"Already have the app? Open in World Radio", play:"Listen now", stop:"Stop", dl:"Go to Google Play Store",
-                 hint:"With the World Radio app for Android you can listen in the background, in your car and save stations.",
-                 ios:"World Radio is currently available for Android.",
-                 wx:"To open World Radio: tap ··· at the top right and choose “Open in browser”." };
+  var T = de ? { open:"App schon installiert? In World Radio 1 öffnen", play:"Jetzt anhören", stop:"Stopp", dl:"Zum Google Play Store",
+                 hint:"Mit der App World Radio 1 für Android hörst du diesen Sender auch im Hintergrund und im Auto und kannst ihn speichern.",
+                 ios:"World Radio 1 gibt es aktuell für Android.",
+                 wx:"Um World Radio 1 zu öffnen: oben rechts auf ··· tippen und „Im Browser öffnen“ wählen." }
+        : zh ? { open:"已安装应用？在 World Radio 1 中打开", play:"立即收听", stop:"停止", dl:"前往 Google Play 商店",
+                 hint:"使用 Android 版 World Radio 1 应用，可以在后台和车上收听，并收藏电台。",
+                 ios:"World Radio 1 目前仅支持 Android。",
+                 wx:"要打开 World Radio 1：请点击右上角 ··· ，选择「在浏览器打开」。" }
+             : { open:"Already have the app? Open in World Radio 1", play:"Listen now", stop:"Stop", dl:"Go to Google Play Store",
+                 hint:"With the World Radio 1 app for Android you can listen in the background, in your car and save stations.",
+                 ios:"World Radio 1 is currently available for Android.",
+                 wx:"To open World Radio 1: tap ··· at the top right and choose “Open in browser”." };
   document.documentElement.lang = de ? "de" : zh ? "zh" : "en";
   // WeChat blockiert das Öffnen anderer Apps -> Hinweis, die Seite im Browser zu öffnen
   var wechat = /MicroMessenger/i.test(navigator.userAgent);
@@ -104,7 +104,7 @@
 
   function render() {
     var name = st.name || "Radio";
-    document.title = name + " – World Radio";
+    document.title = name + " – World Radio 1";
     document.getElementById("name").textContent = name;
     document.getElementById("meta").textContent =
       [st.country, st.tags.split(",").slice(0, 3).join(", ")].filter(Boolean).join(" · ");
